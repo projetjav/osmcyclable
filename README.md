@@ -1,9 +1,11 @@
 # osmcyclable
 Projet étude OSM
 
+Important : le fichier d'étude a été fractionné en 10 parties car GitHub refuse les fichiers de plus de 25 (!) Mo. Après avoir téléchargé toutes les parties, n'importe quel archiveur (WinRAR, 7Zip au moins) pourra réassembler le fichier. 
+
 ========================================================================================
 
-Commande osm2pgsql :
+Commande osm2pgsql nécessaire pour traiter le fichier :
 
 ```
 osm2pgsql.exe --host [hôte, habituellement 127.0.0.1] --port [port, habituellement 5432] --username [nom postgres] –-password --database [nom bdd] --slim --latlong --hstore --input-reader pbf "C:\Chemin\d’acces\avec_antislashs\fichier.osm.pbf"
