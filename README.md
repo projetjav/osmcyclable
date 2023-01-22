@@ -11,7 +11,7 @@ Commande osm2pgsql nécessaire pour traiter le fichier :
 osm2pgsql.exe --host [hôte, habituellement 127.0.0.1] --port [port, habituellement 5432] --username [nom postgres] –-password --database [nom bdd] --slim --latlong --hstore --input-reader pbf "C:\Chemin\d’acces\avec_antislashs\fichier.osm.pbf"
 ```
 
-L’invite de commandes demandera ensuite d’entrer le mot de passe, après le mot de passe entré la lecture du fichier devrait se lancer.
+L’invite de commandes demandera ensuite d’entrer le mot de passe ; après le mot de passe entré, la lecture du fichier devrait se lancer.
 
 Les tables démarrant par « planet » sont générées automatiquement par osm2pgsql lors de la lecture du fichier de données. Voici une explication rapide de chaque table :
 -	planet_osm_line : chaque « ligne » géométrique, que ce soit des routes, câbles, ou étendues d’eaux, est représentée ici. L’identifiant OSM est donné en premier, puis une liste de tags associés à l’objet. La colonne « name » permet de connaitre le nom assigné à l’objet, la colonne « tags » les tags qui n’ont pas eu leur propre colonne, et la colonne « way » donne la géométrie de l’objet. Important : cette table donne aussi des lignes en dehors du Centre.
@@ -62,7 +62,7 @@ where osm_bicycle_roads_centre.osm_id = ANY(osm_bicycle_rels.parts)
 =========================================================================
 
 Table osm_way_rel_cyclable1 :
-Cette table existe en prérequis pour la table qui suit. Elle donne les différentes way qui composent une relation ainsi qu’une colonne qui indique si la relation est cyclable ou non.
+Cette table existe en prérequis pour la table qui suit. Elle donne les différentes ways qui composent une relation ainsi qu’une colonne qui indique si la relation est cyclable ou non.
 
 ```
 CREATE TABLE osm_way_rel_cyclable1 AS
@@ -76,7 +76,7 @@ from planet_osm_rels, osm_bicycle_rels
 =========================================================================
 
 Table osm_way_rel_cyclable2 :
-Liée à la table précédente, cette table decompose l’array des différentes ways qui composent une relation pour avoir une ligne par way. Cela permet de voir à quelle relation appartient chaque way, et si la relation est cyclable ou non.
+Liée à la table précédente, cette table décompose l’array des différentes ways qui composent une relation pour avoir une ligne par way. Cela permet de voir à quelle relation appartient chaque way, et si la relation est cyclable ou non.
 
 ```
 CREATE TABLE osm_way_rel_cyclable2 AS
