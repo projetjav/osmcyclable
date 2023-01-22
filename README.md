@@ -3,7 +3,7 @@ Projet étude OSM
 
 Important : le fichier d'étude a été fractionné en 10 parties car GitHub refuse les fichiers de plus de 25 (!) Mo. Après avoir téléchargé toutes les parties, n'importe quel archiveur (WinRAR, 7Zip au moins) pourra réassembler le fichier. 
 
-========================================================================================
+=========================================================================
 
 Commande osm2pgsql nécessaire pour traiter le fichier :
 
@@ -22,7 +22,7 @@ Les tables démarrant par « planet » sont générées automatiquement par osm2
 -	planet_osm_roads : cette table donne les différentes routes dans la région Centre. La première colonne donne leur identifiant, puis les suivantes donnent les tags associés. On notera la colonne « bicycle » ; cependant le terme « cycleway » peut aussi être retrouvé dans la colonne « tags ». 
 -	planet_osm_ways : chaque « way » est représentée ici avec trois colonnes : l’identifiant, les nodes qui composent la way, et les tags associés à la way.
 
-========================================================================================
+=========================================================================
 
 Les tables démarrant par « osm » ont été créées par moi pour mieux me servir des données et répondre aux attentes du projet. L’ordre de création des tables est dans l’ordre du document.
 Voici une liste des tables utilisées :
@@ -37,7 +37,7 @@ select id, array_length(parts, 1) as nb_ways, parts, members, tags from planet_o
 WHERE 'bicycle' = ANY(tags)
 ```
 
-========================================================================================
+=========================================================================
 
 Table osm_bicycle_roads_centre : 
 Cette table donne toutes les routes du Centre qui font partie d’une relation dite « cyclable ». 
@@ -48,7 +48,7 @@ select distinct planet_osm_roads.* from planet_osm_roads, osm_bicycle_rels
 where planet_osm_roads.osm_id = ANY(osm_bicycle_rels.parts)
 ```
 
-========================================================================================
+=========================================================================
 
 Table osm_bicycle_rels_centre :
 Cette table donne toutes les relations cyclables qui contiennent au moins une route située dans le Centre. En d’autres termes, tous les itinéraires cyclables situés au moins partiellement dans le Centre.
@@ -59,7 +59,7 @@ SELECT DISTINCT osm_bicycle_rels.* FROM osm_bicycle_roads_centre, osm_bicycle_re
 where osm_bicycle_roads_centre.osm_id = ANY(osm_bicycle_rels.parts)
 ```
 
-========================================================================================
+=========================================================================
 
 Table osm_way_rel_cyclable1 :
 Cette table existe en prérequis pour la table qui suit. Elle donne les différentes way qui composent une relation ainsi qu’une colonne qui indique si la relation est cyclable ou non.
@@ -73,7 +73,7 @@ case
 from planet_osm_rels, osm_bicycle_rels
 ```
 
-========================================================================================
+=========================================================================
 
 Table osm_way_rel_cyclable2 :
 Liée à la table précédente, cette table decompose l’array des différentes ways qui composent une relation pour avoir une ligne par way. Cela permet de voir à quelle relation appartient chaque way, et si la relation est cyclable ou non.
@@ -83,7 +83,7 @@ CREATE TABLE osm_way_rel_cyclable2 AS
 select unnest(way) as way2, relation, rel_cyclable from osm_way_rel_cyclable1 
 ```
 
-========================================================================================
+=========================================================================
 
 Les tables définies ci-dessous correspondent au modèle de données utilisé pour étudier OSM.
 
@@ -95,7 +95,7 @@ CREATE TABLE fait_partie AS
 select way2 as way, relation as relation, rel_cyclable as rel_cyclable from osm_way_rel_cyclable2
 ```
 
-========================================================================================
+=========================================================================
 
 Table troncon : 
 Représente les identifiants de tous les tronçons de route du centre depuis la table de routes générée par osm2pgsql. Cette table devait aussi contenir la valeur de pente (en pourcents) soit l’inclinaison de la route, mais ayant trop peu d’informations à ce sujet dans les tags des tronçons (moins de 1% des tronçons avaient une valeur de pente définie), l’idée a été abandonnée.
@@ -105,7 +105,7 @@ CREATE TABLE troncon AS
 select osm_id as idItineraire from planet_osm_roads
 ```
 
-========================================================================================
+=========================================================================
 
 Table itineraire : 
 Représente les identifiants des relations/itinéraires, avec leur nom (ici les tags sont affichés dans la colonne nom, car différents tags représentent les noms), et le « niveau » de l’itinéraire. Le niveau représente l’importance du réseau : local, régional, national ou international.
@@ -122,7 +122,7 @@ case
 from osm_bicycle_rels_centre
 ```
 
-========================================================================================
+=========================================================================
 
 Table itineraire_sansniveau :
 Cette table était une table temporaire servant à avoir une table « itineraire » avant de découvrir comment représenter le niveau. Elle fonctionne de la même manière que la table « itineraire », mais sans la colonne de niveau.
@@ -132,7 +132,7 @@ CREATE TABLE itineraire_sansniveau AS
 select id as idItineraire, tags as nomItineraire from osm_bicycle_rels_centre
 ```
 
-========================================================================================
+=========================================================================
 
 Table osm_ways_slope : 
 Cette table était censée permettre l’étude des pentes définies pour les routes d’OSM. Cependant, vu le faible taux de complétude de la colonne, l’idée a été abandonnée.
