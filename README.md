@@ -4,11 +4,16 @@ Projet étude OSM
 Important : le fichier d'étude a été fractionné en 10 parties car GitHub refuse les fichiers de plus de 25 (!) Mo. Après avoir téléchargé toutes les parties, n'importe quel archiveur (WinRAR, 7Zip au moins) pourra réassembler le fichier. 
 
 =========================================================================
+Prérequis :
 
+-Avoir une base de données créée et exploitable dans PostgreSQL
+-Avoir installé les extensions hstore et PostGIS
+
+=========================================================================
 Commande osm2pgsql nécessaire pour traiter le fichier :
 
 ```
-osm2pgsql.exe --host [hôte, habituellement 127.0.0.1] --port [port, habituellement 5432] --username [nom postgres] –-password --database [nom bdd] --slim --latlong --hstore --input-reader pbf "C:\Chemin\d’acces\avec_antislashs\fichier.osm.pbf"
+osm2pgsql.exe --host [hôte, habituellement 127.0.0.1] --port [port, habituellement 5432] --username [nom postgres] –-password --database [nom bdd] --slim --latlong --hstore --style "C:\Chemin\d'acces\vers\default.style" --input-reader pbf "C:\Chemin\d’acces\avec_antislashs\fichier.osm.pbf"
 ```
 
 L’invite de commandes demandera ensuite d’entrer le mot de passe ; après le mot de passe entré, la lecture du fichier devrait se lancer.
@@ -19,7 +24,7 @@ Les tables démarrant par « planet » sont générées automatiquement par osm2
 -	planet_osm_point : cette table indique les points qui représentent un objet à eux seuls. En d’autres termes, les objets définis par un seul point, comme les pylônes. Cette table fonctionne comme la table « line » : l’identifiant est donné, puis une liste de colonnes avec les tags associés, puis une colonne « tags » avec les tags restants et une colonne « way » pour la géométrie. Important : cette table donne aussi des points en dehors du Centre.
 -	planet_osm_polygon : les polygones sont représentés dans cette table de la même manière que les points et les lignes (identifiants, colonnes de tags, « tags » supplémentaires, « way » géométrique).
 -	planet_osm_rels : les relations, objets composés de plusieurs « ways », sont représentées ici. La colonne « parts » donne les différentes « ways » qui composent la relation avec leurs identifiants ; la colonne « members » donne plus d’informations. Cette table comporte aussi une colonne « tags » permettant d’avoir les différentes informations associées aux relations.
--	planet_osm_roads : cette table donne les différentes routes dans la région Centre. La première colonne donne leur identifiant, puis les suivantes donnent les tags associés. On notera la colonne « bicycle » ; cependant le terme « cycleway » peut aussi être retrouvé dans la colonne « tags ». 
+-	planet_osm_roads : cette table donne les différentes lignes utilisables pour un rendu géographique - c'est à dire principalement les routes, mais aussi les étendues d'eau (rivières, fleuves) dans la région Centre. La première colonne donne leur identifiant, puis les suivantes donnent les tags associés. On notera la colonne « bicycle » ; cependant le terme « cycleway » peut aussi être retrouvé dans la colonne « tags ».
 -	planet_osm_ways : chaque « way » est représentée ici avec trois colonnes : l’identifiant, les nodes qui composent la way, et les tags associés à la way.
 
 =========================================================================
@@ -92,7 +97,9 @@ Représente les différents tronçons (« way ») et l’itinéraire (« relatio
 
 ```
 CREATE TABLE fait_partie AS
-select way2 as way, relation as relation, rel_cyclable as rel_cyclable from osm_way_rel_cyclable2
+select way2 as idTroncon, relation as idItineraire, rel_cyclable as rel_cyclable from osm_way_rel_cyclable2
+
+ALTER TABLE fait_partie ADD PRIMARY KEY (idTroncon);
 ```
 
 =========================================================================
@@ -102,7 +109,9 @@ Représente les identifiants de tous les tronçons de route du centre depuis la 
 
 ```
 CREATE TABLE troncon AS
-select osm_id as idItineraire from planet_osm_roads
+select osm_id as idTroncon from planet_osm_roads
+
+ALTER TABLE troncon ADD PRIMARY KEY (idTroncon);
 ```
 
 =========================================================================
@@ -120,6 +129,14 @@ case
 	WHEN 'icn'=ANY(tags) THEN 'international'
 	END niveau
 from osm_bicycle_rels_centre
+
+ALTER TABLE itineraire ADD PRIMARY KEY (idItineraire);
+
+ALTER TABLE itineraire
+ADD CONSTRAINT check_niveau
+CHECK (
+	niveau in ('local', 'regional', 'national', 'international')
+)
 ```
 
 =========================================================================
