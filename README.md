@@ -4,12 +4,15 @@ Projet étude OSM
 Important : le fichier d'étude a été fractionné en 10 parties car GitHub refuse les fichiers de plus de 25 (!) Mo. Après avoir téléchargé toutes les parties, n'importe quel archiveur (WinRAR, 7Zip au moins) pourra réassembler le fichier. 
 
 =========================================================================
+
 Prérequis :
 
 -Avoir une base de données créée et exploitable dans PostgreSQL
+
 -Avoir installé les extensions hstore et PostGIS
 
 =========================================================================
+
 Commande osm2pgsql nécessaire pour traiter le fichier :
 
 ```
