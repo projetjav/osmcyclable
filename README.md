@@ -101,8 +101,6 @@ Représente les différents tronçons (« way ») et l’itinéraire (« relatio
 ```
 CREATE TABLE fait_partie AS
 select way2 as idTroncon, relation as idItineraire, rel_cyclable as rel_cyclable from osm_way_rel_cyclable2
-
-ALTER TABLE fait_partie ADD PRIMARY KEY (idTroncon);
 ```
 
 =========================================================================
@@ -112,7 +110,7 @@ Représente les identifiants de tous les tronçons de route du centre depuis la 
 
 ```
 CREATE TABLE troncon AS
-select osm_id as idTroncon from planet_osm_roads
+select distinct osm_id as idTroncon from planet_osm_roads
 
 ALTER TABLE troncon ADD PRIMARY KEY (idTroncon);
 ```
